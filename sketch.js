@@ -1,28 +1,44 @@
 var attackLevel = 0.5;
 var releaseLevel = 0;
 
-var env, osc1;
+var env, osc1, osc2;
 
-var s_attackTime, s_decayTime, s_susPercent, s_releaseTime;
+var s_attackTime, s_decayTime, s_susPercent, s_releaseTime, s_osc1_tune, s_osc2_tune;
 
 
 function setup() {
     
     setupUI();
     
-    var cnv = createCanvas(1000, 1000);
+    setupEnv();
+    
+    setupOsc1();
+    
+    setupOsc2();
+}
 
+function setupEnv(){
     env = new p5.Env();
     env.setRange(attackLevel, releaseLevel);
-    
+}
+
+function setupOsc1(){
     osc1 = new p5.Oscillator('triangle');
     osc1.amp(env);
     osc1.start();
-    osc1.freq(220);
+    osc1.freq(0);
+}
+
+function setupOsc2(){
+    osc2 = new p5.Oscillator('triangle');
+    osc2.amp(env);
+    osc2.start();
+    osc2.freq(0);
 }
 
 function playEnv(){
     osc1.amp(0);
+    osc2.amp(0);
     env.play();
 }
 
@@ -99,16 +115,30 @@ function keyPressed(){
 }
 
 function setNote(noteValue){
+    if(s_osc1_tune != 0){
+        noteValue = noteValue * s_osc1_tune.value();
+    }
     osc1.freq(noteValue);
+    if(s_osc2_tune != 0){
+        if(s_osc2_tune.value() > 0){
+            osc2.freq(noteValue * s_osc2_tune.value());
+        } else if(s_osc2_tune.value() < 0){
+            osc2.freq(noteValue / s_osc2_tune.value());
+        } 
+    } else {
+        osc2.amp(0);
+    }
 }
 
 function setupUI(){
     
-    s_attackTime = createSlider(0.04, 1, 0.5, 0.01);
+    var cnv = createCanvas(1000, 1000);
+    
+    s_attackTime = createSlider(0.04, 1, 0.06, 0.01);
     s_attackTime.position(10, 10);
     s_attackTime.style('width', '80px');    
     
-    s_decayTime = createSlider(0, 1, 0.5, 0.01);
+    s_decayTime = createSlider(0, 1, 0.1, 0.01);
     s_decayTime.position(10, 40);
     s_decayTime.style('width', '80px');
     
@@ -119,6 +149,16 @@ function setupUI(){
     s_releaseTime = createSlider(0, 1, 0.5, 0.01);
     s_releaseTime.position(10, 100);
     s_releaseTime.style('width', '80px');
+    
+    s_osc1_tune = createSlider(0.1, 2, 1, 0.1);
+    s_osc1_tune.position(10, 130);
+    s_osc1_tune.style('width', '80px');
+    
+    s_osc2_tune = createSlider(-5, 3, 0, 0.1);
+    s_osc2_tune.position(10, 160);
+    s_osc2_tune.style('width', '80px');
+    
+    
     
 }
 
@@ -132,4 +172,6 @@ function drawText(){
     text("Decay", 110, 50);
     text("Sustain", 110, 80);
     text("Release", 110, 110);
+    text("Osc1 Tune", 110, 140);
+    text("Osc2 Tune", 110, 170);
 }
