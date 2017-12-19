@@ -1,16 +1,20 @@
 var attackLevel = 0.5;
 var releaseLevel = 0;
 
-var env, osc1, osc2;
+var env, osc1, osc2, filter;
 
-var s_attackTime, s_decayTime, s_susPercent, s_releaseTime, s_osc1_tune, s_osc2_tune;
+var s_attackTime, s_decayTime, s_susPercent, s_releaseTime, s_filterFreq, s_filterRes, s_osc1_tune, s_osc2_tune;
 
 
 function setup() {
     
+    frameRate(1000);
+    
     setupUI();
     
     setupEnv();
+    
+    setupFilter();
     
     setupOsc1();
     
@@ -22,11 +26,17 @@ function setupEnv(){
     env.setRange(attackLevel, releaseLevel);
 }
 
+function setupFilter(){
+    filter = new p5.LowPass();
+}
+
 function setupOsc1(){
     osc1 = new p5.Oscillator('triangle');
     osc1.amp(env);
     osc1.start();
     osc1.freq(0);
+    osc1.disconnect();
+    osc1.connect(filter);
 }
 
 function setupOsc2(){
@@ -34,7 +44,10 @@ function setupOsc2(){
     osc2.amp(env);
     osc2.start();
     osc2.freq(0);
+    osc2.disconnect();
+    osc2.connect(filter);
 }
+
 
 function playEnv(){
     osc1.amp(0);
@@ -158,12 +171,21 @@ function setupUI(){
     s_osc2_tune.position(10, 160);
     s_osc2_tune.style('width', '80px');
     
+    s_filterFreq = createSlider(0, 100, 100, 0.0001);
+    s_filterFreq.position(10, 190);
+    s_filterFreq.style('width', '80px');
+    
+    s_filterRes = createSlider(0, 30, 0, 1);
+    s_filterRes.position(10, 220);
+    s_filterRes.style('width', '80px');
     
     
 }
 
 function draw(){
     env.setADSR(s_attackTime.value(), s_decayTime.value(), s_susPercent.value(), s_releaseTime.value());
+    filter.freq(s_filterFreq.value()*s_filterFreq.value());
+    filter.res(s_filterRes.value());
     drawText();
 }
 
@@ -174,4 +196,6 @@ function drawText(){
     text("Release", 110, 110);
     text("Osc1 Tune", 110, 140);
     text("Osc2 Tune", 110, 170);
+    text("Filter Freq", 110, 200);
+    text("Filter Res", 110, 230);
 }
