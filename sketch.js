@@ -1,12 +1,12 @@
 var attackLevel = 0.5;
 var releaseLevel = 0;
 
-var env, osc1, osc2, filter;
+var env, osc1, osc2, filter, currentBaseNote_osc1, currentBaseNote_osc2;
 
-var s_attackTime, s_decayTime, s_susPercent, s_releaseTime, s_filterFreq, s_filterRes, s_osc1_tune, s_osc2_tune;
+var s_attackTime, s_decayTime, s_susPercent, s_releaseTime, s_filterFreq, s_filterRes, s_osc1_tune, s_osc2_tune, s_pitchEnv_amt;
 
 
-function setup() {
+function setup(){
     
     frameRate(1000);
     
@@ -19,6 +19,13 @@ function setup() {
     setupOsc1();
     
     setupOsc2();
+}
+
+function draw(){
+    setPitchEnv();
+    setEnv();
+    setFilter();
+    drawText();
 }
 
 function setupEnv(){
@@ -127,25 +134,10 @@ function keyPressed(){
     }
 }
 
-function setNote(noteValue){
-    if(s_osc1_tune != 0){
-        noteValue = noteValue * s_osc1_tune.value();
-    }
-    osc1.freq(noteValue);
-    if(s_osc2_tune != 0){
-        if(s_osc2_tune.value() > 0){
-            osc2.freq(noteValue * s_osc2_tune.value());
-        } else if(s_osc2_tune.value() < 0){
-            osc2.freq(noteValue / s_osc2_tune.value());
-        } 
-    } else {
-        osc2.amp(0);
-    }
-}
-
 function setupUI(){
     
-    var cnv = createCanvas(1000, 1000);
+    var cnv = createCanvas(200, 280);
+    background(51);
     
     s_attackTime = createSlider(0.04, 1, 0.06, 0.01);
     s_attackTime.position(10, 10);
@@ -179,14 +171,49 @@ function setupUI(){
     s_filterRes.position(10, 220);
     s_filterRes.style('width', '80px');
     
+    s_pitchEnv_amt = createSlider(-10, 0, 10, 0.1);
+    s_pitchEnv_amt.position(10, 250);
+    s_pitchEnv_amt.style('width', '80px');
     
 }
 
-function draw(){
+function setPitchEnv(){
+    if(currentBaseNote_osc1 > 0){
+        osc1.freq(currentBaseNote_osc1);
+    }
+    if(currentBaseNote_osc2 > 0){
+        osc2.freq(currentBaseNote_osc2);
+    }
+    currentBaseNote_osc1 += s_pitchEnv_amt.value();    
+    currentBaseNote_osc2 += s_pitchEnv_amt.value();
+}
+
+function setEnv(){
     env.setADSR(s_attackTime.value(), s_decayTime.value(), s_susPercent.value(), s_releaseTime.value());
+}
+
+function setFilter(){
     filter.freq(s_filterFreq.value()*s_filterFreq.value());
     filter.res(s_filterRes.value());
-    drawText();
+}
+
+function setNote(noteValue){
+    if(s_osc1_tune != 0){
+        noteValue = noteValue * s_osc1_tune.value();
+    }
+    currentBaseNote_osc1 = noteValue;
+    osc1.freq(noteValue);
+    if(s_osc2_tune != 0){
+        if(s_osc2_tune.value() > 0){
+            osc2.freq(noteValue * s_osc2_tune.value());
+            currentBaseNote_osc2 = noteValue * s_osc2_tune.value();
+        } else if(s_osc2_tune.value() < 0){
+            osc2.freq(noteValue / s_osc2_tune.value());
+            currentBaseNote_osc2 = noteValue / s_osc2_tune.value();
+        } 
+    } else {
+        osc2.amp(0);
+    }
 }
 
 function drawText(){
@@ -198,4 +225,5 @@ function drawText(){
     text("Osc2 Tune", 110, 170);
     text("Filter Freq", 110, 200);
     text("Filter Res", 110, 230);
+    text("Pitch Env", 110, 260);
 }
