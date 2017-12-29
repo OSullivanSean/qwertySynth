@@ -22,6 +22,7 @@ function setup(){
 }
 
 function draw(){
+    background(51);
     setPitchEnv();
     setEnv();
     setFilter();
@@ -136,43 +137,43 @@ function keyPressed(){
 
 function setupUI(){
     
-    var cnv = createCanvas(200, 280);
+    var cnv = createCanvas(280, 280);
     background(51);
     
     s_attackTime = createSlider(0.04, 1, 0.06, 0.01);
-    s_attackTime.position(10, 10);
+    s_attackTime.position(60, 10);
     s_attackTime.style('width', '80px');    
     
     s_decayTime = createSlider(0, 1, 0.1, 0.01);
-    s_decayTime.position(10, 40);
+    s_decayTime.position(60, 40);
     s_decayTime.style('width', '80px');
     
     s_susPercent = createSlider(0, 1, 0.5, 0.1);
-    s_susPercent.position(10, 70);
+    s_susPercent.position(60, 70);
     s_susPercent.style('width', '80px');
     
     s_releaseTime = createSlider(0, 1, 0.5, 0.01);
-    s_releaseTime.position(10, 100);
+    s_releaseTime.position(60, 100);
     s_releaseTime.style('width', '80px');
     
     s_osc1_tune = createSlider(0.1, 2, 1, 0.1);
-    s_osc1_tune.position(10, 130);
+    s_osc1_tune.position(60, 130);
     s_osc1_tune.style('width', '80px');
     
     s_osc2_tune = createSlider(-5, 3, 0, 0.1);
-    s_osc2_tune.position(10, 160);
+    s_osc2_tune.position(60, 160);
     s_osc2_tune.style('width', '80px');
     
     s_filterFreq = createSlider(0, 100, 100, 0.0001);
-    s_filterFreq.position(10, 190);
+    s_filterFreq.position(60, 190);
     s_filterFreq.style('width', '80px');
     
     s_filterRes = createSlider(0, 30, 0, 1);
-    s_filterRes.position(10, 220);
+    s_filterRes.position(60, 220);
     s_filterRes.style('width', '80px');
     
     s_pitchEnv_amt = createSlider(-10, 0, 10, 0.1);
-    s_pitchEnv_amt.position(10, 250);
+    s_pitchEnv_amt.position(60, 250);
     s_pitchEnv_amt.style('width', '80px');
     
 }
@@ -217,13 +218,25 @@ function setNote(noteValue){
 }
 
 function drawText(){
-    text("Attack", 110, 20);
-    text("Decay", 110, 50);
-    text("Sustain", 110, 80);
-    text("Release", 110, 110);
-    text("Osc1 Tune", 110, 140);
-    text("Osc2 Tune", 110, 170);
-    text("Filter Freq", 110, 200);
-    text("Filter Res", 110, 230);
-    text("Pitch Env", 110, 260);
+    text(s_attackTime.value(), 10, 20);
+    text(s_decayTime.value(), 10, 50);
+    text(s_susPercent.value(), 10, 80);
+    text(s_releaseTime.value(), 10, 110);
+    text(s_osc1_tune.value(), 10, 140);
+    text(s_osc2_tune.value(), 10, 170);
+    text(s_filterFreq.value().toPrecision(2)*s_filterFreq.value().toPrecision(2), 10, 200);
+    text(s_filterRes.value(), 10, 230);
+    text(s_pitchEnv_amt.value(), 10, 260);
+
+    
+    
+    text("Attack", 180, 20);
+    text("Decay", 180, 50);
+    text("Sustain", 180, 80);
+    text("Release", 180, 110);
+    text("Osc1 Tune", 180, 140);
+    text("Osc2 Tune", 180, 170);
+    text("Filter Freq", 180, 200);
+    text("Filter Res", 180, 230);
+    text("Pitch Env", 180, 260);
 }
